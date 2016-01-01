@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Benionline.com.np</string>
+    <string name="Open">Open</string>
+    <string name="Close">Close</string>
+
+    <string-array name="topics">
+        <item>सबै समाचार </item>
+        <item>राष्ट्रिय समाचार </item>
+        <item>म्याग्दी समाचार</item>
+        <item>पर्वत समाचार </item>
+        <item>बाग्लुङ समाचार</item>
+        <item>मुस्ताङ समाचार</item>
+        <item>प्रबास समाचार</item>
+        <item>खेलकुद समाचार</item>
+        <item>आर्थिक समाचार</item>
+        <item>बिबिध समाचार</item>
+
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
