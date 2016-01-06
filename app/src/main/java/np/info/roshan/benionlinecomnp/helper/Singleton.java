@@ -4,6 +4,7 @@ import android.app.Application;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -36,9 +37,17 @@ public class Singleton extends Application {
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
     }
-    public static boolean isConnected() {
+
+    public static int isConnected() {
         ConnectivityManager cm = (ConnectivityManager) getmInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if(networkInfo!=null) {
+            if(networkInfo.getType()==ConnectivityManager.TYPE_MOBILE)
+                return 1;
+            else
+                return 2;
+        } else
+            return 0;
     }
 
     public static synchronized Singleton getmInstance() {
@@ -57,6 +66,7 @@ public class Singleton extends Application {
 
         getRequestQueue().add(req);
     }
+
 
     public static CharSequence convertDate(String date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);

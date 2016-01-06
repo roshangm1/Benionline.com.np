@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/action_font"
-        android:icon="@drawable/fav_black"
+        android:icon="@drawable/font_size"
         android:title="Change Font Size"
         app:showAsAction="always">
 

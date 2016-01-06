@@ -1,6 +1,7 @@
 package np.info.roshan.benionlinecomnp.activities;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -109,8 +110,11 @@ public class NewsDetails extends AppCompatActivity {
 
         settings = webContent.getSettings();
 
-        settings.setDefaultFontSize(fontSize);
+        settings.setDefaultFontSize(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("fontsize",fontSize));
         settings.setJavaScriptEnabled(true);
+
+        seekBar.setMax(10);
+        seekBar.setProgress(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("progress",2));
 
 
         webContent.setFocusableInTouchMode(false);
@@ -164,8 +168,6 @@ public class NewsDetails extends AppCompatActivity {
 
         } else if(item.getItemId()==R.id.action_font) {
 
-            seekBar.setMax(10);
-            seekBar.setProgress(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("progress",2));
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 int prevProgress;
 
@@ -173,9 +175,9 @@ public class NewsDetails extends AppCompatActivity {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     int dff = progress-prevProgress;
                     if(dff<0)
-                        fontSize-=3;
+                        fontSize-=2;
                     else
-                        fontSize+=3;
+                        fontSize+=2;
                     prevProgress = progress;
 
 
@@ -190,8 +192,7 @@ public class NewsDetails extends AppCompatActivity {
                 public void onStopTrackingTouch(SeekBar seekBar) {
 
                     settings.setDefaultFontSize(fontSize);
-                    Log.e("Progress", String.valueOf(prevProgress));
-                    getSharedPreferences("progressNow",MODE_PRIVATE).edit().putInt("progress",prevProgress);
+                    getSharedPreferences("progressNow",MODE_PRIVATE).edit().putInt("progress",prevProgress).putInt("fontsize",fontSize);
 
                 }
             });
@@ -200,6 +201,9 @@ public class NewsDetails extends AppCompatActivity {
                     .customView(seekBar,false).show();
 
         }
+
+        else if (item.getItemId()==R.id.action_setting)
+            startActivity(new Intent(NewsDetails.this,Settings.class));
 
 
 
@@ -221,6 +225,8 @@ public class NewsDetails extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        settings.setDefaultFontSize(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("fontsize",fontSize));
+        seekBar.setProgress(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("progress",2));
 
     }
 

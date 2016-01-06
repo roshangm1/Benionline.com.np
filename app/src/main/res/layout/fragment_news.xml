@@ -22,11 +22,11 @@
             android:textStyle="bold"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="No Favourite News"
+            android:text="फेब्रोइट समाचार छैन।\n समाचार फेब्रोइट गर्न सो समाचार खोलेर फेब्रोइट बटन थिच्नुहोस्। "
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            android:visibility="gone"
+
             />
     </RelativeLayout>
 
@@ -63,12 +63,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Internet Connect Garna Sakiyena" />
+            android:text="इन्टरनेट कनेक्ट गर्न सकिएन" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feri prayas garnalai screen thichnuhos"
+            android:text="फेरी प्रयास गर्नको लागि स्क्रिनमा थिच्नु होस् "
             android:textColor="@color/colorPrimary" />
     </LinearLayout>
 </RelativeLayout>

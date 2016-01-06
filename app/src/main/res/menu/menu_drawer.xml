@@ -8,7 +8,7 @@
             android:id="@+id/all_news"
             android:checked="true"
             android:icon="@drawable/all"
-            android:title="सबै समाचार"></item>
+            android:title="ताजा समाचार "></item>
 
         <item
             android:id="@+id/national_news"
@@ -53,7 +53,7 @@
 
         <item
             android:id="@+id/read_later"
-            android:icon="@drawable/settings"
+            android:icon="@drawable/fav_black"
             android:title="फेब्रोईट "></item>
 
         <item
