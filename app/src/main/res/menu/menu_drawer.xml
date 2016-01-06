@@ -52,9 +52,15 @@
         android:checkableBehavior="single">
 
         <item
+            android:id="@+id/read_later"
+            android:icon="@drawable/settings"
+            android:title="फेब्रोईट "></item>
+
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/settings"
             android:title="सेटिङ्ग "></item>
+
 
 
         <item

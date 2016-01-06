@@ -32,8 +32,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
             mContents = new ArrayList<>(),
             mCategories = new ArrayList<>(),
             mWriters = new ArrayList<>();
+    private ArrayList<Integer> mIds = new ArrayList<>();
 
-    public NewsAdapter(Context context, ArrayList mTitles, ArrayList mDates, ArrayList mImages, ArrayList mContents, ArrayList mCategories, ArrayList mWriters) {
+
+    public NewsAdapter(Context context, ArrayList mIds, ArrayList mTitles, ArrayList mDates, ArrayList mImages, ArrayList mContents, ArrayList mCategories, ArrayList mWriters) {
         this.context = context;
         this.mTitles = mTitles;
         this.mDates = mDates;
@@ -41,6 +43,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
         this.mImages = mImages;
         this.mCategories = mCategories;
         this.mWriters = mWriters;
+        this.mIds = mIds;
 
     }
 
@@ -60,7 +63,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
 
         if (!mImages.get(position).equals("")) {
 
-            Picasso.with(context).load(mImages.get(position)).networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(holder.featuredImage, new Callback() {
+            Picasso.with(context).load(mImages.get(position)).networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.header).error(R.drawable.header).into(holder.featuredImage, new Callback() {
                 @Override
                 public void onSuccess() {
 
@@ -68,7 +71,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
 
                 @Override
                 public void onError() {
-                    Picasso.with(context).load(mImages.get(position)).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(holder.featuredImage, new Callback() {
+                    Picasso.with(context).load(mImages.get(position)).placeholder(R.drawable.header).error(R.drawable.header).into(holder.featuredImage, new Callback() {
 
                         @Override
                         public void onSuccess() {
@@ -85,7 +88,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
             });
 
         } else {
-            Picasso.with(context).load(R.drawable.placeholder).into(holder.featuredImage);
+            Picasso.with(context).load(R.drawable.header).into(holder.featuredImage);
         }
     }
 
@@ -113,13 +116,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
         public void onClick(View v) {
 
             Intent intent = new Intent(context, NewsDetails.class)
-                    .putExtra("id", getAdapterPosition())
-                    .putStringArrayListExtra("newsTitle", mTitles)
-                    .putStringArrayListExtra("newsDate", mDates)
-                    .putStringArrayListExtra("newsImage", mImages)
-                    .putStringArrayListExtra("newsContent", mContents)
-                    .putStringArrayListExtra("newsCategory", mCategories)
-                    .putStringArrayListExtra("newsAuthor",mWriters);
+                    .putExtra("newsTitle", mTitles.get(getAdapterPosition()))
+                    .putExtra("newsImage", mImages.get(getAdapterPosition()))
+                    .putExtra("newsDate", mDates.get(getAdapterPosition()))
+                    .putExtra("newsContent", mContents.get(getAdapterPosition()))
+                    .putExtra("newsCategory", mCategories.get(getAdapterPosition()))
+                    .putExtra("newsAuthor", mWriters.get(getAdapterPosition()))
+                    .putExtra("newsId", mIds.get(getAdapterPosition()));
 
 
             context.startActivity(intent);

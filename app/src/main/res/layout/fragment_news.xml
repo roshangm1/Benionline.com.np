@@ -15,6 +15,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
+
+        <TextView
+            android:id="@+id/noFav"
+           android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="No Favourite News"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:visibility="gone"
+            />
     </RelativeLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout

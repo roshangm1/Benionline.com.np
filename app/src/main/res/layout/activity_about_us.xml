@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarAbout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:theme="@style/Theme.AppCompat"
+        app:layout_scrollFlags="scroll|enterAlways" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbarAbout"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/hamrobare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="हाम्रो बारे "
+            android:textColor="@color/colorPrimary"
+            android:textSize="29sp" />
+
+        <WebView
+            android:id="@+id/about_web"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </WebView>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#eee">
+
+        <LinearLayout
+            android:id="@+id/about_text"
+            android:padding="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Developed by:"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="BrainAnts Technology" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Thamel, Kathmandu" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/about_text">
+
+
+            <mehdi.sakout.fancybuttons.FancyButton
+
+                android:id="@+id/facebookButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:padding="5dp"
+                fancy:fb_defaultColor="#3B5998"
+                fancy:fb_focusColor="#5B74A9"
+                fancy:fb_iconResource="@drawable/facebook_icon" />
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:id="@+id/twitterButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:padding="5dp"
+                fancy:fb_defaultColor="#55acee"
+                fancy:fb_focusColor="#8055acee"
+                fancy:fb_iconResource="@drawable/twitter_icon" />
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:id="@+id/webButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+
+                android:layout_weight="1"
+                android:padding="5dp"
+                fancy:fb_defaultColor="@color/colorAccent"
+                fancy:fb_focusColor="#8055acee"
+                fancy:fb_iconResource="@drawable/web_icon"
+
+                />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

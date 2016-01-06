@@ -1,42 +1,49 @@
 package np.info.roshan.benionlinecomnp.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-
 import np.info.roshan.benionlinecomnp.R;
+import np.info.roshan.benionlinecomnp.helper.SQLiteHandler;
 import np.info.roshan.benionlinecomnp.helper.Singleton;
 
 public class NewsDetails extends AppCompatActivity {
 
-    private TextView txtTitle, txtDate,txtCategory,txtAuthor;
+    private TextView txtTitle, txtDate, txtCategory, txtAuthor;
     private WebView webContent;
-    private int id;
-    private Toolbar toolbar;
-    private ArrayList<String> mTitles = new ArrayList<>(),
-            mDates = new ArrayList<>(),
-            mImages = new ArrayList<>(),
-            mContents = new ArrayList<>(),
-            mCategories = new ArrayList<>(),
-            mWriters = new ArrayList<>();
     private int fontSize;
+    private Toolbar toolbar;
+    private String mTitles;
+    private String mDates;
+    private String mImages;
+    private String mContents;
+    private String mCategories;
+    private int mIds;
+    private String mWriters;
+    private boolean saved;
+    private Menu menu;
+    private  WebSettings settings;
+    SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,37 +60,41 @@ public class NewsDetails extends AppCompatActivity {
 
         webContent = (WebView) findViewById(R.id.newsContents);
 
-        id = getIntent().getIntExtra("id", 0);
 
 
         final String mimeType = "text/html";
         final String encoding = "UTF-8";
+        seekBar = new SeekBar(this);
 
-        mTitles = getIntent().getStringArrayListExtra("newsTitle");
-        mDates = getIntent().getStringArrayListExtra("newsDate");
-        mContents = getIntent().getStringArrayListExtra("newsContent");
-        mImages = getIntent().getStringArrayListExtra("newsImage");
-        mCategories = getIntent().getStringArrayListExtra("newsCategory");
-        mWriters = getIntent().getStringArrayListExtra("newsAuthor");
 
-        String html = mContents.get(id);
+        mIds = getIntent().getExtras().getInt("newsId");
+        mTitles = getIntent().getStringExtra("newsTitle");
+        mDates = getIntent().getStringExtra("newsDate");
+        mContents = getIntent().getStringExtra("newsContent");
+        mImages = getIntent().getStringExtra("newsImage");
+        mCategories = getIntent().getStringExtra("newsCategory");
+        mWriters = getIntent().getStringExtra("newsAuthor");
+
+        String html = mContents;
         Document doc = Jsoup.parse(html);
         Elements images = doc.getElementsByTag("img");
-        for(Element image : images ) {
-            image.attr("style","pointer-events:none; display:inline; height:auto; max-width:100%;");
+        for (Element image : images) {
+            image.attr("alt", "");
+            image.attr("style", "pointer-events:none; display:inline; height:auto; max-width:100%;");
             image.appendElement("br");
 
-           // image.attr("onerror","this.src='file:///android_res/drawable/" + "placeholder.png'" );
+
+            // image.attr("onerror","this.src='file:///android_res/drawable/" + "header'" );
 
         }
 
-        Log.v("Data::",doc.toString());
-        Log.v("Data::",html.toString());
+        Log.v("Data::", doc.toString());
+        Log.v("Data::", html.toString());
 
-        txtTitle.setText(mTitles.get(id));
-        txtDate.setText(Singleton.convertDate(mDates.get(id)));
-        txtCategory.setText(mCategories.get(id));
-        txtAuthor.setText(mWriters.get(id));
+        txtTitle.setText(mTitles);
+        txtDate.setText(Singleton.convertDate(mDates));
+        txtCategory.setText(mCategories);
+        txtAuthor.setText(mWriters);
 
 
         webContent.loadDataWithBaseURL("", "<body style=\"text-align:justify\">" + doc.toString() + "</body>", mimeType, encoding, "");
@@ -95,38 +106,148 @@ public class NewsDetails extends AppCompatActivity {
 
 
         fontSize = (int) getResources().getDimension(R.dimen.textSize);
-        WebSettings settings = webContent.getSettings();
 
+        settings = webContent.getSettings();
 
         settings.setDefaultFontSize(fontSize);
         settings.setJavaScriptEnabled(true);
 
 
-        //webContent.setFocusableInTouchMode(false);
-        //webContent.setFocusable(false);
+        webContent.setFocusableInTouchMode(false);
+        webContent.setFocusable(false);
 
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
         settings.supportZoom();
 
+        saved = isNewsSaved();
     }
+
+    private void changeIcon() {
+        if(saved)
+            menu.findItem(R.id.action_fav).setIcon(R.drawable.fav_black);
+        else
+            menu.findItem(R.id.action_fav).setIcon(R.drawable.fav);
+
+
+    }
+    private boolean isNewsSaved() {
+        SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM fav_news WHERE news_id=" + mIds + ";",null);
+        if(cursor.moveToNext())
+            return true;
+        return false;
+
+
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             super.onBackPressed();
-        } else if(item.getItemId()==R.id.action_fav) {
-            Toast.makeText(this,"Read this later //Todo",Toast.LENGTH_SHORT).show();
-        } else if(item.getItemId()==R.id.action_night) {
-            Toast.makeText(this,"NightMode //Todo",Toast.LENGTH_SHORT).show();
-            setTheme(R.style.NightTheme);
+
+        } else if (item.getItemId() == R.id.action_fav) {
+            if(saved) {
+                deleteFromDb();
+                Snackbar.make(findViewById(R.id.newsDetailsCore), "फेबरोइट समाचार हटाइयो। ", Snackbar.LENGTH_SHORT).show();
+            } else {
+                storeFav();
+                Snackbar.make(findViewById(R.id.newsDetailsCore), "समाचार फेब्रोईट गरियो।  ", Snackbar.LENGTH_SHORT).show();
+            }
+
+            changeIcon();
+
+        } else if (item.getItemId() == R.id.action_night) {
+            Toast.makeText(this, "NightMode //Todo", Toast.LENGTH_SHORT).show();
+
+        } else if(item.getItemId()==R.id.action_font) {
+
+            seekBar.setMax(10);
+            seekBar.setProgress(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("progress",2));
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                int prevProgress;
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int dff = progress-prevProgress;
+                    if(dff<0)
+                        fontSize-=3;
+                    else
+                        fontSize+=3;
+                    prevProgress = progress;
+
+
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    settings.setDefaultFontSize(fontSize);
+                    Log.e("Progress", String.valueOf(prevProgress));
+                    getSharedPreferences("progressNow",MODE_PRIVATE).edit().putInt("progress",prevProgress);
+
+                }
+            });
+            new MaterialDialog.Builder(NewsDetails.this)
+                    .title("Change font size")
+                    .customView(seekBar,false).show();
+
         }
-        return true;
+
+
+
+        return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_menu,menu);
+        getMenuInflater().inflate(R.menu.action_menu, menu);
+
+        this.menu  = menu;
+        changeIcon();
+
         return super.onCreateOptionsMenu(menu);
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    private void storeFav() {
+        SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.clear();
+        values.put("news_id", mIds);
+        values.put("title", mTitles);
+        values.put("date", mDates);
+        values.put("image", mImages);
+        values.put("content", mContents);
+        values.put("category", mCategories);
+        values.put("author", mWriters);
+        database.insert("fav_news", null, values);
+        saved = true;
+        database.close();
+    }
+
+    private void deleteFromDb() {
+
+        SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
+        database.execSQL("DELETE FROM fav_news WHERE news_id=" + mIds + ";");
+        saved = false;
+        database.close();
+    }
+
+
 }

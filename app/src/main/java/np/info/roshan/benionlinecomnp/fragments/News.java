@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -52,11 +53,15 @@ public class News extends Fragment {
             mContents = new ArrayList<>(),
             mCategories = new ArrayList<>(),
             mWriters = new ArrayList<>();
-    private String tableName;
+    private NewsAdapter adapter;
+    private ArrayList<Integer> mIds = new ArrayList<>();
+
+    public static String tableName;
     private SwipeRefreshLayout swipeNews;
     private ProgressBar progressBar;
     private LinearLayout errorMsg;
     private View mainView;
+    private TextView noFavNews;
 
     public News() {
         // Required empty public constructor
@@ -89,62 +94,58 @@ public class News extends Fragment {
             case R.id.all_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=news&count=20";
                 tableName = "all_news";
-
-                Toast.makeText(context, "All News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.national_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=national-news&count=20";
                 tableName = "national_news";
-                Toast.makeText(context, "National News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.myagdi_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=myagdeli-news&count=20";
                 tableName = "myagdi_news";
-                Toast.makeText(context, "Myagdi News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.parbat_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=parbat-news&count=20";
                 tableName = "parbat_news";
-                Toast.makeText(context, "PArbat News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.baglung_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=baglunge-news&count=20";
                 tableName = "baglung_news";
-                Toast.makeText(context, "Baglung News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.mustang_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=mustangi-news&count=20";
                 tableName = "mustang_news";
-                Toast.makeText(context, "Mustang", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.foreign_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%B5%E0%A4%BE%E0%A4%B8&count=20";
                 tableName = "foreign_news";
-                Toast.makeText(context, "Foreign News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.sport_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=sport-news&count=20";
                 tableName = "sport_news";
-                Toast.makeText(context, "Sport News", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.eco_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=%E0%A4%85%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%A5%E0%A4%BF%E0%A4%95&count=20";
                 tableName = "eco_news";
-                Toast.makeText(context, "Eco News", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.misc_news:
                 url = "http://myagdikali.com/api/get_category_posts/?slug=%e0%a4%b5%e0%a4%bf%e0%a4%b5%e0%a4%bf%e0%a4%a7&count=20";
                 tableName = "misc_news";
-                Toast.makeText(context, "Misc News", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.read_later:
+                tableName = "fav_news";
                 break;
 
         }
 
-        loadFromDatabase();
+        if(tableName.equals("fav_news"))
+            loadFavouritePosts();
+        else
+            loadFromDatabase();
 
 
     }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -152,6 +153,8 @@ public class News extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recy);
         progressBar = (ProgressBar) view.findViewById(R.id.progressbarFb);
+        noFavNews = (TextView) view.findViewById(R.id.noFav);
+
         errorMsg = (LinearLayout) view.findViewById(R.id.errorMessage);
         this.mainView = view;
 
@@ -185,7 +188,7 @@ public class News extends Fragment {
     private void fetchFromInternet(final boolean isFirst) {
 
         if (isFirst) {
-            if(isConnected()) {
+            if (isConnected()) {
                 errorMsg.setVisibility(View.GONE);
             }
             swipeNews.setVisibility(View.GONE);
@@ -201,6 +204,7 @@ public class News extends Fragment {
                 mContents.clear();
                 mCategories.clear();
                 mWriters.clear();
+                mIds.clear();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     String status = jsonObject.getString("status");
@@ -218,6 +222,7 @@ public class News extends Fragment {
                                 JSONArray categories = object.getJSONArray("categories");
                                 JSONObject author = object.getJSONObject("author");
 
+                                mIds.add(object.getInt("id"));
                                 mTitles.add(object.getString("title"));
                                 mDates.add(object.getString("date"));
                                 mContents.add(object.getString("content"));
@@ -261,9 +266,9 @@ public class News extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 swipeNews.setRefreshing(false);
                 progressBar.setVisibility(View.GONE);
-                if(isFirst)
+                if (isFirst)
                     errorMsg.setVisibility(View.VISIBLE);
-                Snackbar.make(mainView, "No network connection. Try Again Later.", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mainView, "इन्टरनेट छैन।  फेरी प्रयास गर्नु होस्। । । ", Snackbar.LENGTH_SHORT).show();
                 Log.e("ERror///", error.toString());
             }
         }
@@ -273,16 +278,12 @@ public class News extends Fragment {
         //int socketTimeout = 3000;
         stringRequest.setRetryPolicy(new
 
-                DefaultRetryPolicy(20 * 1000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
-
-        );
+                DefaultRetryPolicy(20 * 1000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         //RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         //stringRequest.setRetryPolicy(policy);
 
-        Singleton.getmInstance().
-
-                addToRequestQueue(stringRequest);
+        Singleton.getmInstance().addToRequestQueue(stringRequest);
     }
 
 
@@ -293,12 +294,60 @@ public class News extends Fragment {
         progressBar.setVisibility(View.GONE);
         errorMsg.setVisibility(View.GONE);
 
+        Log.d("IDSSSS", String.valueOf(mIds));
+
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(new NewsAdapter(context, mTitles, mDates, mImages, mContents, mCategories, mWriters));
+        adapter = new NewsAdapter(context, mIds, mTitles, mDates, mImages, mContents, mCategories, mWriters);
+        recyclerView.setAdapter(adapter);
 
 
     }
+
+    private void loadFavouritePosts() {
+        SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
+        Cursor cursor = database.query("fav_news", new String[]{"news_id", "title", "date", "image", "content", "category", "author"}, null, null, null, null, null);
+        int i = 0;
+
+        mIds.clear();
+        mTitles.clear();
+        mDates.clear();
+        mImages.clear();
+        mContents.clear();
+        mCategories.clear();
+        mWriters.clear();
+
+        while (cursor.moveToNext()) {
+            i++;
+            mIds.add(cursor.getInt(cursor.getColumnIndex("news_id")));
+            mTitles.add(cursor.getString(cursor.getColumnIndex("title")));
+            mDates.add(cursor.getString(cursor.getColumnIndex("date")));
+            mImages.add(cursor.getString(cursor.getColumnIndex("image")));
+            mContents.add(cursor.getString(cursor.getColumnIndex("content")));
+            mCategories.add(cursor.getString(cursor.getColumnIndex("category")));
+            mWriters.add(cursor.getString(cursor.getColumnIndex("author")));
+        }
+        if (tableName.equals("fav_news")) {
+            progressBar.setVisibility(View.GONE);
+            swipeNews.setEnabled(false);
+
+        }
+
+        if (i == 0) {
+            if (tableName.equals("fav_news")) {
+                progressBar.setVisibility(View.GONE);
+                swipeNews.setEnabled(false);
+                noFavNews.setVisibility(View.VISIBLE);
+
+            }
+        } else {
+            fillRecy();
+        }
+
+        cursor.close();
+        database.close();
+    }
+
 
     private void storeToDb() {
         SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
@@ -306,6 +355,7 @@ public class News extends Fragment {
         ContentValues content = new ContentValues();
         for (int i = 0; i < mTitles.size(); i++) {
             content.clear();
+            content.put("id", mIds.get(i));
             content.put("title", mTitles.get(i));
             content.put("date", mDates.get(i));
             content.put("image", mImages.get(i));
@@ -322,8 +372,9 @@ public class News extends Fragment {
     private void loadFromDatabase() {
 
         SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
-        Cursor cursor = database.query(tableName, new String[]{"title", "date", "image", "content", "category", "author"}, null, null, null, null, null);
+        Cursor cursor = database.query(tableName, new String[]{"id", "title", "date", "image", "content", "category", "author"}, null, null, null, null, null);
         int i = 0;
+        mIds.clear();
         mTitles.clear();
         mDates.clear();
         mImages.clear();
@@ -332,6 +383,7 @@ public class News extends Fragment {
         mWriters.clear();
         while (cursor.moveToNext()) {
             i++;
+            mIds.add(cursor.getInt(cursor.getColumnIndex("id")));
             mTitles.add(cursor.getString(cursor.getColumnIndex("title")));
             mDates.add(cursor.getString(cursor.getColumnIndex("date")));
             mImages.add(cursor.getString(cursor.getColumnIndex("image")));

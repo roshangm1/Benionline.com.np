@@ -2,9 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_fav" android:icon="@drawable/fav"
+        android:id="@+id/action_fav"
+        android:icon="@drawable/fav_black"
         android:title="Favourite"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
+
+    </item>
+
+    <item
+        android:id="@+id/action_font"
+        android:icon="@drawable/fav_black"
+        android:title="Change Font Size"
+        app:showAsAction="always">
 
     </item>
 
@@ -12,7 +21,15 @@
         android:id="@+id/action_night"
         android:icon="@drawable/night"
         android:title="Night Mode"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
+
+    </item>
+
+    <item
+        android:id="@+id/action_setting"
+        android:icon="@drawable/settings"
+        android:title="Setting"
+        app:showAsAction="never">
 
     </item>
 </menu>
