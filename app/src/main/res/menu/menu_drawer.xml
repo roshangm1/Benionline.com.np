@@ -17,16 +17,24 @@
 
         <item
             android:id="@+id/myagdi_news"
-            android:title="म्याग्दी समाचार"></item>
+            android:title="म्याग्दी समाचार"
+            android:icon="@drawable/myagdi"
+            ></item>
         <item
             android:id="@+id/parbat_news"
-            android:title="पर्वत समाचार"></item>
+            android:title="पर्वत समाचार"
+            android:icon="@drawable/parbat"
+
+            ></item>
         <item
             android:id="@+id/baglung_news"
-            android:title="बाग्लुङ समाचार"></item>
+            android:title="बाग्लुङ समाचार"
+            android:icon="@drawable/baglung"
+            ></item>
         <item
             android:id="@+id/mustang_news"
-            android:title="मुस्ताङ समाचार"></item>
+            android:title="मुस्ताङ समाचार"
+            android:icon="@drawable/mustang"></item>
 
         <item
             android:id="@+id/foreign_news"
