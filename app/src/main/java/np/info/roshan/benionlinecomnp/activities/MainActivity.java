@@ -63,13 +63,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem item) {
                 int currentId = item.getItemId();
                 String menuTitle = (String) item.getTitle();
+                navigate(currentId,menuTitle);
                 mDrawerLayout.closeDrawers();
-                if(lastClicked != currentId) {
-                    navigate(currentId,menuTitle);
-                    lastClicked=currentId;
-                    return true;
-                }
-                return false;
+                return true;
+
             }
         });
 

@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -53,7 +52,6 @@ public class News extends Fragment {
             mContents = new ArrayList<>(),
             mCategories = new ArrayList<>(),
             mWriters = new ArrayList<>();
-    private NewsAdapter adapter;
     private ArrayList<Integer> mIds = new ArrayList<>();
 
     public static String tableName;
@@ -188,12 +186,13 @@ public class News extends Fragment {
     private void fetchFromInternet(final boolean isFirst) {
 
         if (isFirst) {
-            if (isConnected()) {
+            if (Singleton.isConnected()!=0) {
                 errorMsg.setVisibility(View.GONE);
             }
             swipeNews.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
         }
+        Snackbar.make(mainView.findViewById(R.id.newsLayout),"कृपया पर्खनु होस् !! नयाँ समाचार अपडेट गरिदै छ ",Snackbar.LENGTH_LONG).show();
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
@@ -249,6 +248,7 @@ public class News extends Fragment {
 
                     storeToDb();
                     loadFromDatabase();
+                        Snackbar.make(mainView.findViewById(R.id.newsLayout),"समाचार अपडेट गरियो। ",Snackbar.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -294,11 +294,13 @@ public class News extends Fragment {
         progressBar.setVisibility(View.GONE);
         errorMsg.setVisibility(View.GONE);
 
+
+
         Log.d("IDSSSS", String.valueOf(mIds));
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new NewsAdapter(context, mIds, mTitles, mDates, mImages, mContents, mCategories, mWriters);
+        NewsAdapter adapter = new NewsAdapter(context, mIds, mTitles, mDates, mImages, mContents, mCategories, mWriters);
         recyclerView.setAdapter(adapter);
 
 
@@ -393,7 +395,7 @@ public class News extends Fragment {
         }
 
         if (i == 0) {
-            if (!isConnected()) {
+            if (Singleton.isConnected()==0) {
                 errorMsg.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
 
@@ -410,10 +412,5 @@ public class News extends Fragment {
         cursor.close();
         database.close();
 
-    }
-
-    public boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
     }
 }

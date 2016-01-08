@@ -1,12 +1,9 @@
 package np.info.roshan.benionlinecomnp.helper;
 
 import android.app.Application;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.format.DateUtils;
 
 import com.android.volley.Request;

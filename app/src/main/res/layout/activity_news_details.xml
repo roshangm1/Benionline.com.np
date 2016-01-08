@@ -20,15 +20,18 @@
         app:layout_scrollFlags="scroll|enterAlways" />
 
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbarNews"
         android:orientation="vertical">
 
+
+
         <LinearLayout
             android:id="@+id/mainBar"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#fff"
             android:elevation="@dimen/activity_horizontal_margin"
@@ -41,8 +44,8 @@
                 android:layout_margin="3dp"
                 android:background="#fff"
                 android:text="My name is Rojshan gaautam and i read in class IX "
-                android:textSize="27sp"
                 android:textColor="#000"
+                android:textSize="27sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -78,7 +81,10 @@
                     android:background="#fff"
                     android:text="Editor" />
             </LinearLayout>
+
         </LinearLayout>
+
+
 
         <WebView
             android:id="@+id/newsContents"
@@ -89,7 +95,20 @@
             android:background="#fff"
             android:scrollbars="none"
             android:text="News Content here" />
-    </LinearLayout>
 
+
+    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share" app:borderWidth="0dp"
+        app:elevation="6dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        app:backgroundTint="#99ff5722"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/share"
+        />
 
 </RelativeLayout>

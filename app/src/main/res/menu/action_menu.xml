@@ -17,13 +17,7 @@
 
     </item>
 
-    <item
-        android:id="@+id/action_night"
-        android:icon="@drawable/night"
-        android:title="Night Mode"
-        app:showAsAction="always">
 
-    </item>
 
     <item
         android:id="@+id/action_setting"

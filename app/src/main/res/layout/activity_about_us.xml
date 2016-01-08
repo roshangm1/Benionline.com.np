@@ -14,42 +14,57 @@
         android:theme="@style/Theme.AppCompat"
         app:layout_scrollFlags="scroll|enterAlways" />
 
-    <LinearLayout
-
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbarAbout"
-        android:orientation="vertical">
+        android:background="#fff">
 
-        <TextView
-            android:id="@+id/hamrobare"
+        <LinearLayout
+
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="हाम्रो बारे "
-            android:textColor="@color/colorPrimary"
-            android:textSize="29sp" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbarAbout"
+            android:background="#fff"
+            android:orientation="vertical">
 
-        <WebView
-            android:id="@+id/about_web"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/hamrobare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="1dp"
+                android:gravity="center"
+                android:text="हाम्रो बारे "
+                android:textColor="@color/colorPrimary"
+                android:textSize="29sp" />
 
-        </WebView>
-    </LinearLayout>
+
+            <TextView
+                android:id="@+id/about_web"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#fff"
+                android:padding="4dp"
+                android:textAlignment="gravity"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#000">
+
+            </TextView>
+        </LinearLayout>
+    </ScrollView>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#eee">
+        android:background="#fff">
 
         <LinearLayout
             android:id="@+id/about_text"
-            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="3dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -107,7 +122,7 @@
                 android:layout_weight="1"
                 android:padding="5dp"
                 fancy:fb_defaultColor="@color/colorAccent"
-                fancy:fb_focusColor="#8055acee"
+                fancy:fb_focusColor="@color/transColorAccent"
                 fancy:fb_iconResource="@drawable/web_icon"
 
                 />

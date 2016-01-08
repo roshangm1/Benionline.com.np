@@ -5,4 +5,16 @@
     android:background="@drawable/header"
     >
 
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BrainAnts Technology"
+        android:textColor="#fff"
+        android:textSize="15sp"
+        android:padding="3dp"
+        android:textStyle="bold"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+
 </RelativeLayout>

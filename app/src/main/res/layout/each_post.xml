@@ -62,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.40"
             android:layout_height="match_parent"
-            android:src="@drawable/placeholder"
+            android:src="@drawable/header"
             android:layout_margin="3dp"
             android:background="#e5e5e6"
             android:scaleType="centerCrop"

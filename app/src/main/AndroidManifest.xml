@@ -13,21 +13,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.MainActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation">
+            android:name=".activities.SplashScreen"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.NewsDetails" />
-        <activity android:name=".activities.AboutUs" />
-        <activity android:name=".activities.Settings"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+        <activity
+            android:name=".activities.NewsDetails"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.AboutUs"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.Settings"
+            android:configChanges="orientation|screenSize" />
+
+
+        <activity
+            android:name=".activities.MainActivity"
+            android:configChanges="orientation|screenSize"></activity>
     </application>
 
 </manifest>

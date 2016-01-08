@@ -4,18 +4,19 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -30,10 +31,7 @@ import np.info.roshan.benionlinecomnp.helper.Singleton;
 
 public class NewsDetails extends AppCompatActivity {
 
-    private TextView txtTitle, txtDate, txtCategory, txtAuthor;
-    private WebView webContent;
     private int fontSize;
-    private Toolbar toolbar;
     private String mTitles;
     private String mDates;
     private String mImages;
@@ -43,7 +41,7 @@ public class NewsDetails extends AppCompatActivity {
     private String mWriters;
     private boolean saved;
     private Menu menu;
-    private  WebSettings settings;
+    private WebSettings settings;
     SeekBar seekBar;
 
     @Override
@@ -52,15 +50,15 @@ public class NewsDetails extends AppCompatActivity {
 
         setContentView(R.layout.activity_news_details);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbarNews);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarNews);
 
-        txtTitle = (TextView) findViewById(R.id.newsTitle);
-        txtDate = (TextView) findViewById(R.id.newsDate);
-        txtAuthor = (TextView) findViewById(R.id.newsWriter);
-        txtCategory = (TextView) findViewById(R.id.newsCategory);
+        TextView txtTitle = (TextView) findViewById(R.id.newsTitle);
+        TextView txtDate = (TextView) findViewById(R.id.newsDate);
+        TextView txtAuthor = (TextView) findViewById(R.id.newsWriter);
+        TextView txtCategory = (TextView) findViewById(R.id.newsCategory);
 
-        webContent = (WebView) findViewById(R.id.newsContents);
-
+        WebView webContent = (WebView) findViewById(R.id.newsContents);
+        final FloatingActionButton fabShare = (FloatingActionButton) findViewById(R.id.share);
 
 
         final String mimeType = "text/html";
@@ -89,8 +87,6 @@ public class NewsDetails extends AppCompatActivity {
 
         }
 
-        Log.v("Data::", doc.toString());
-        Log.v("Data::", html.toString());
 
         txtTitle.setText(mTitles);
         txtDate.setText(Singleton.convertDate(mDates));
@@ -110,11 +106,13 @@ public class NewsDetails extends AppCompatActivity {
 
         settings = webContent.getSettings();
 
-        settings.setDefaultFontSize(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("fontsize",fontSize));
+        settings.setDefaultFontSize(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("fontsize", fontSize));
         settings.setJavaScriptEnabled(true);
 
         seekBar.setMax(10);
-        seekBar.setProgress(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("progress",2));
+        seekBar.setProgress(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("progress", 2));
+
+        settings.setLoadsImagesAutomatically(getSharedPreferences("settings", MODE_PRIVATE).getBoolean("loadImages", true));
 
 
         webContent.setFocusableInTouchMode(false);
@@ -125,26 +123,37 @@ public class NewsDetails extends AppCompatActivity {
         settings.supportZoom();
 
         saved = isNewsSaved();
+
+        fabShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fabShare.setRippleColor(Color.parseColor("#ff5722"));
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+
+                intent.putExtra(Intent.EXTRA_SUBJECT,"http://www.myagdikali.com/" + mIds + ".html");
+                intent.putExtra(Intent.EXTRA_TEXT,"http://www.myagdikali.com/" + mIds + ".html");
+                startActivity(Intent.createChooser(intent,"How do you want to share ?"));
+            }
+        });
     }
 
     private void changeIcon() {
-        if(saved)
+        if (saved)
             menu.findItem(R.id.action_fav).setIcon(R.drawable.fav_black);
         else
             menu.findItem(R.id.action_fav).setIcon(R.drawable.fav);
 
 
     }
-    private boolean isNewsSaved() {
-        SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
-        Cursor cursor = database.rawQuery("SELECT * FROM fav_news WHERE news_id=" + mIds + ";",null);
-        if(cursor.moveToNext())
-            return true;
-        return false;
 
+    private boolean isNewsSaved() {
+
+        SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM fav_news WHERE news_id=" + mIds + ";", null);
+        return cursor.moveToNext();
 
     }
-
 
 
     @Override
@@ -153,7 +162,7 @@ public class NewsDetails extends AppCompatActivity {
             super.onBackPressed();
 
         } else if (item.getItemId() == R.id.action_fav) {
-            if(saved) {
+            if (saved) {
                 deleteFromDb();
                 Snackbar.make(findViewById(R.id.newsDetailsCore), "फेबरोइट समाचार हटाइयो। ", Snackbar.LENGTH_SHORT).show();
             } else {
@@ -163,21 +172,19 @@ public class NewsDetails extends AppCompatActivity {
 
             changeIcon();
 
-        } else if (item.getItemId() == R.id.action_night) {
-            Toast.makeText(this, "NightMode //Todo", Toast.LENGTH_SHORT).show();
 
-        } else if(item.getItemId()==R.id.action_font) {
+        } else if (item.getItemId() == R.id.action_font) {
 
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 int prevProgress;
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    int dff = progress-prevProgress;
-                    if(dff<0)
-                        fontSize-=2;
+                    int dff = progress - prevProgress;
+                    if (dff < 0)
+                        fontSize -= 2;
                     else
-                        fontSize+=2;
+                        fontSize += 2;
                     prevProgress = progress;
 
 
@@ -192,19 +199,16 @@ public class NewsDetails extends AppCompatActivity {
                 public void onStopTrackingTouch(SeekBar seekBar) {
 
                     settings.setDefaultFontSize(fontSize);
-                    getSharedPreferences("progressNow",MODE_PRIVATE).edit().putInt("progress",prevProgress).putInt("fontsize",fontSize);
+                    getSharedPreferences("progressNow", MODE_PRIVATE).edit().putInt("progress", prevProgress).putInt("fontsize", fontSize).apply();
 
                 }
             });
             new MaterialDialog.Builder(NewsDetails.this)
                     .title("Change font size")
-                    .customView(seekBar,false).show();
+                    .customView(seekBar, false).show();
 
-        }
-
-        else if (item.getItemId()==R.id.action_setting)
-            startActivity(new Intent(NewsDetails.this,Settings.class));
-
+        } else if (item.getItemId() == R.id.action_setting)
+            startActivity(new Intent(NewsDetails.this, Settings.class));
 
 
         return super.onOptionsItemSelected(item);
@@ -215,7 +219,7 @@ public class NewsDetails extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_menu, menu);
 
-        this.menu  = menu;
+        this.menu = menu;
         changeIcon();
 
         return super.onCreateOptionsMenu(menu);
@@ -225,8 +229,8 @@ public class NewsDetails extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        settings.setDefaultFontSize(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("fontsize",fontSize));
-        seekBar.setProgress(getSharedPreferences("progressNow",MODE_PRIVATE).getInt("progress",2));
+        settings.setDefaultFontSize(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("fontsize", fontSize));
+        seekBar.setProgress(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("progress", 2));
 
     }
 
