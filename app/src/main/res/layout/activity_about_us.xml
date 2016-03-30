@@ -23,8 +23,7 @@
         <LinearLayout
 
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/toolbarAbout"
+            android:layout_height="wrap_content"
             android:background="#fff"
             android:orientation="vertical">
 
@@ -32,7 +31,6 @@
                 android:id="@+id/hamrobare"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="1dp"
                 android:gravity="center"
                 android:text="हाम्रो बारे "
                 android:textColor="@color/colorPrimary"
@@ -45,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:background="#fff"
                 android:padding="4dp"
-                android:textAlignment="gravity"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#000">
 
@@ -118,7 +115,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
-
                 android:layout_weight="1"
                 android:padding="5dp"
                 fancy:fb_defaultColor="@color/colorAccent"

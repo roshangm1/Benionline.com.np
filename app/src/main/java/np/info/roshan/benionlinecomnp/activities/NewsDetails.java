@@ -131,9 +131,9 @@ public class NewsDetails extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
 
-                intent.putExtra(Intent.EXTRA_SUBJECT,"http://www.myagdikali.com/" + mIds + ".html");
-                intent.putExtra(Intent.EXTRA_TEXT,"http://www.myagdikali.com/" + mIds + ".html");
-                startActivity(Intent.createChooser(intent,"How do you want to share ?"));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "http://www.myagdikali.com/" + mIds + ".html");
+                intent.putExtra(Intent.EXTRA_TEXT, "http://www.myagdikali.com/" + mIds + ".html");
+                startActivity(Intent.createChooser(intent, "How do you want to share ?"));
             }
         });
     }

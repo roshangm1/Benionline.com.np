@@ -175,9 +175,7 @@ public class News extends Fragment {
             }
         });
 
-        if (getActivity() != null) {
             context = getActivity();
-        }
 
 
     }
@@ -193,6 +191,7 @@ public class News extends Fragment {
             progressBar.setVisibility(View.VISIBLE);
         }
         Snackbar.make(mainView.findViewById(R.id.newsLayout),"कृपया पर्खनु होस् !! नयाँ समाचार अपडेट गरिदै छ ",Snackbar.LENGTH_LONG).show();
+
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
@@ -349,7 +348,6 @@ public class News extends Fragment {
         cursor.close();
         database.close();
     }
-
 
     private void storeToDb() {
         SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
