@@ -36,12 +36,15 @@ public class AboutUs extends AppCompatActivity {
 
         TextView aboutUs = (TextView) findViewById(R.id.about_web);
 
+        assert aboutUs != null;
         aboutUs.setText(Html.fromHtml(aboutContent));
 
         FancyButton facebook = (FancyButton) findViewById(R.id.facebookButton);
         FancyButton twitter = (FancyButton) findViewById(R.id.twitterButton);
         FancyButton web = (FancyButton) findViewById(R.id.webButton);
 
+        assert facebook != null;
+        assert facebook != null;
         facebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +62,8 @@ public class AboutUs extends AppCompatActivity {
         });
 
 
+        assert twitter != null;
+        assert twitter != null;
         twitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +81,7 @@ public class AboutUs extends AppCompatActivity {
         });
 
 
+        assert web != null;
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

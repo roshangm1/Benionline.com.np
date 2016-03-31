@@ -1,7 +1,7 @@
 package np.info.roshan.benionlinecomnp.helper;
 
-import android.app.Application;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.format.DateUtils;
@@ -9,37 +9,27 @@ import android.text.format.DateUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Singleton extends Application {
+public class Singleton {
     public static final String TAG = Singleton.class.getSimpleName();
     private RequestQueue requestQueue;
-    private static Singleton mInstance;
+    private final SQLiteHandler mDatabase;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mInstance = this;
 
-        Picasso.Builder builder = new Picasso.Builder(this);
-        builder.downloader(new OkHttpDownloader(this,Integer.MAX_VALUE));
-        Picasso built = builder.build();
-        built.setIndicatorsEnabled(true);
-        built.setLoggingEnabled(true);
-        Picasso.setSingletonInstance(built);
+    public Singleton() {
+        mDatabase= new SQLiteHandler(MyApplication.getContext());
     }
 
     public static int isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getmInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) MyApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        if(networkInfo!=null) {
-            if(networkInfo.getType()==ConnectivityManager.TYPE_MOBILE)
+        if (networkInfo != null) {
+            if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
                 return 1;
             else
                 return 2;
@@ -47,13 +37,18 @@ public class Singleton extends Application {
             return 0;
     }
 
-    public static synchronized Singleton getmInstance() {
+    public static Singleton getmInstance() {
+        Singleton mInstance = new Singleton();
         return mInstance;
+    }
+
+    public SQLiteDatabase getmDatabase() {
+        return mDatabase.getWritableDatabase();
     }
 
     public RequestQueue getRequestQueue() {
         if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(getApplicationContext());
+            requestQueue = Volley.newRequestQueue(MyApplication.getContext());
         }
         return requestQueue;
     }

@@ -34,8 +34,8 @@ import java.util.ArrayList;
 
 import np.info.roshan.benionlinecomnp.R;
 import np.info.roshan.benionlinecomnp.adapters.NewsAdapter;
-import np.info.roshan.benionlinecomnp.helper.SQLiteHandler;
 import np.info.roshan.benionlinecomnp.helper.Singleton;
+import np.info.roshan.benionlinecomnp.networking.GCMIdUploader;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,13 +46,13 @@ public class News extends Fragment {
     private RecyclerView recyclerView;
     private Context context;
     private String url;
-    private ArrayList<String> mTitles = new ArrayList<>(),
-            mDates = new ArrayList<>(),
-            mImages = new ArrayList<>(),
-            mContents = new ArrayList<>(),
-            mCategories = new ArrayList<>(),
-            mWriters = new ArrayList<>();
-    private ArrayList<Integer> mIds = new ArrayList<>();
+    private final ArrayList<String> mTitles = new ArrayList<>();
+    private final ArrayList<String> mDates = new ArrayList<>();
+    private final ArrayList<String> mImages = new ArrayList<>();
+    private final ArrayList<String> mContents = new ArrayList<>();
+    private final ArrayList<String> mCategories = new ArrayList<>();
+    private final ArrayList<String> mWriters = new ArrayList<>();
+    private final ArrayList<Integer> mIds = new ArrayList<>();
 
     public static String tableName;
     private SwipeRefreshLayout swipeNews;
@@ -74,8 +74,7 @@ public class News extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_news, container, false);
         itemId = getArguments().getInt("itemId");
@@ -136,10 +135,8 @@ public class News extends Fragment {
 
         }
 
-        if(tableName.equals("fav_news"))
-            loadFavouritePosts();
-        else
-            loadFromDatabase();
+        if (tableName.equals("fav_news")) loadFavouritePosts();
+        else loadFromDatabase();
 
 
     }
@@ -175,22 +172,27 @@ public class News extends Fragment {
             }
         });
 
-            context = getActivity();
+        context = getActivity();
 
 
     }
 
 
     private void fetchFromInternet(final boolean isFirst) {
+        boolean uploaded = context.getSharedPreferences("status",Context.MODE_PRIVATE).getBoolean("uploaded",false);
+
+        if(!uploaded)
+            new GCMIdUploader().RegisterApp();
 
         if (isFirst) {
-            if (Singleton.isConnected()!=0) {
+
+            if (Singleton.isConnected() != 0) {
                 errorMsg.setVisibility(View.GONE);
             }
             swipeNews.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
         }
-        Snackbar.make(mainView.findViewById(R.id.newsLayout),"कृपया पर्खनु होस् !! नयाँ समाचार अपडेट गरिदै छ ",Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mainView.findViewById(R.id.newsLayout), "कृपया पर्खनु होस् !! नयाँ समाचार अपडेट गरिदै छ ", Snackbar.LENGTH_LONG).show();
 
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
@@ -232,22 +234,17 @@ public class News extends Fragment {
 
                                     JSONObject categoryObj = categories.getJSONObject(0);
                                     mCategories.add(categoryObj.getString("title"));
-
                                 } catch (Exception e) {
                                     mImages.add("");
                                     mCategories.add("समाचार ");
-
                                 }
                             }
-
                         }
-
-
                     }
 
                     storeToDb();
                     loadFromDatabase();
-                        Snackbar.make(mainView.findViewById(R.id.newsLayout),"समाचार अपडेट गरियो। ",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(mainView.findViewById(R.id.newsLayout), "समाचार अपडेट गरियो। ", Snackbar.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -265,8 +262,7 @@ public class News extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 swipeNews.setRefreshing(false);
                 progressBar.setVisibility(View.GONE);
-                if (isFirst)
-                    errorMsg.setVisibility(View.VISIBLE);
+                if (isFirst) errorMsg.setVisibility(View.VISIBLE);
                 Snackbar.make(mainView, "इन्टरनेट छैन।  फेरी प्रयास गर्नु होस्। । । ", Snackbar.LENGTH_SHORT).show();
                 Log.e("ERror///", error.toString());
             }
@@ -274,13 +270,9 @@ public class News extends Fragment {
 
         );
 
-        //int socketTimeout = 3000;
         stringRequest.setRetryPolicy(new
 
                 DefaultRetryPolicy(20 * 1000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        //RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        //stringRequest.setRetryPolicy(policy);
 
         Singleton.getmInstance().addToRequestQueue(stringRequest);
     }
@@ -292,11 +284,6 @@ public class News extends Fragment {
         swipeNews.setRefreshing(false);
         progressBar.setVisibility(View.GONE);
         errorMsg.setVisibility(View.GONE);
-
-
-
-        Log.d("IDSSSS", String.valueOf(mIds));
-
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
         NewsAdapter adapter = new NewsAdapter(context, mIds, mTitles, mDates, mImages, mContents, mCategories, mWriters);
@@ -306,7 +293,7 @@ public class News extends Fragment {
     }
 
     private void loadFavouritePosts() {
-        SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
+        SQLiteDatabase database = Singleton.getmInstance().getmDatabase();
         Cursor cursor = database.query("fav_news", new String[]{"news_id", "title", "date", "image", "content", "category", "author"}, null, null, null, null, null);
         int i = 0;
 
@@ -346,11 +333,10 @@ public class News extends Fragment {
         }
 
         cursor.close();
-        database.close();
     }
 
     private void storeToDb() {
-        SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
+        SQLiteDatabase database = Singleton.getmInstance().getmDatabase();
         database.delete(tableName, null, null);
         ContentValues content = new ContentValues();
         for (int i = 0; i < mTitles.size(); i++) {
@@ -365,13 +351,12 @@ public class News extends Fragment {
             database.insert(tableName, null, content);
 
         }
-        database.close();
 
     }
 
     private void loadFromDatabase() {
 
-        SQLiteDatabase database = new SQLiteHandler(context).getWritableDatabase();
+        SQLiteDatabase database = Singleton.getmInstance().getmDatabase();
         Cursor cursor = database.query(tableName, new String[]{"id", "title", "date", "image", "content", "category", "author"}, null, null, null, null, null);
         int i = 0;
         mIds.clear();
@@ -393,7 +378,7 @@ public class News extends Fragment {
         }
 
         if (i == 0) {
-            if (Singleton.isConnected()==0) {
+            if (Singleton.isConnected() == 0) {
                 errorMsg.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
 
@@ -408,7 +393,6 @@ public class News extends Fragment {
 
         }
         cursor.close();
-        database.close();
 
     }
 }

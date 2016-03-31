@@ -15,11 +15,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,18 +38,20 @@ import np.info.roshan.benionlinecomnp.helper.Singleton;
 
 public class NewsDetails extends AppCompatActivity {
 
-    private int fontSize;
-    private String mTitles;
-    private String mDates;
-    private String mImages;
-    private String mContents;
-    private String mCategories;
+    private int fontSize = 9;
+    private String from;
+    private String mTitles, mDates, mImages, mContents, mCategories, mWriters;
+
     private int mIds;
-    private String mWriters;
     private boolean saved;
     private Menu menu;
     private WebSettings settings;
     SeekBar seekBar;
+    private FloatingActionButton fabShare;
+    private LinearLayout linearLayout;
+
+    WebView webContent;
+    TextView txtTitle, txtDate, txtAuthor, txtCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,30 +59,99 @@ public class NewsDetails extends AppCompatActivity {
 
         setContentView(R.layout.activity_news_details);
 
+        from = getIntent().getStringExtra("from");
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarNews);
+        linearLayout= (LinearLayout) findViewById(R.id.newsDetailLayout);
 
-        TextView txtTitle = (TextView) findViewById(R.id.newsTitle);
-        TextView txtDate = (TextView) findViewById(R.id.newsDate);
-        TextView txtAuthor = (TextView) findViewById(R.id.newsWriter);
-        TextView txtCategory = (TextView) findViewById(R.id.newsCategory);
+        txtTitle = (TextView) findViewById(R.id.newsTitle);
+        txtDate = (TextView) findViewById(R.id.newsDate);
+        txtAuthor = (TextView) findViewById(R.id.newsWriter);
+        txtCategory = (TextView) findViewById(R.id.newsCategory);
+        webContent = (WebView) findViewById(R.id.newsContents);
 
-        WebView webContent = (WebView) findViewById(R.id.newsContents);
-        final FloatingActionButton fabShare = (FloatingActionButton) findViewById(R.id.share);
+        fabShare = (FloatingActionButton) findViewById(R.id.share);
+        settings = webContent.getSettings();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("बेनीअनलाइन ");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final String mimeType = "text/html";
-        final String encoding = "UTF-8";
         seekBar = new SeekBar(this);
 
+        if (from != null && from.equals("notification")) {
+            mIds = getIntent().getIntExtra("post_id", 0);
+            final MaterialDialog dialog = new MaterialDialog.Builder(this)
+                    .title("Please wait")
+                    .progress(true,0)
+                    .content("Extracting news")
+                    .build();
+            dialog.show();
+            StringRequest request = new StringRequest("http://myagdikali.com/api/get_post/?post_id=" + mIds, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        JSONObject post = object.getJSONObject("post");
+                        JSONArray categories = post.getJSONArray("categories");
+                        JSONObject author = post.getJSONObject("author");
 
-        mIds = getIntent().getExtras().getInt("newsId");
-        mTitles = getIntent().getStringExtra("newsTitle");
-        mDates = getIntent().getStringExtra("newsDate");
-        mContents = getIntent().getStringExtra("newsContent");
-        mImages = getIntent().getStringExtra("newsImage");
-        mCategories = getIntent().getStringExtra("newsCategory");
-        mWriters = getIntent().getStringExtra("newsAuthor");
+                        mTitles = post.getString("title");
+                        mDates = post.getString("date");
+                        mContents = post.getString("content");
+                        mWriters = author.getString("name");
 
+                        JSONObject categoryObj = categories.getJSONObject(0);
+                        mCategories = categoryObj.getString("title");
+
+
+                        fillNews();
+                        dialog.dismiss();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    dialog.dismiss();
+                    onBackPressed();
+                }
+            });
+            Singleton.getmInstance().addToRequestQueue(request);
+        } else {
+            mIds = getIntent().getExtras().getInt("newsId");
+            mTitles = getIntent().getStringExtra("newsTitle");
+            mDates = getIntent().getStringExtra("newsDate");
+            mContents = getIntent().getStringExtra("newsContent");
+            mImages = getIntent().getStringExtra("newsImage");
+            mCategories = getIntent().getStringExtra("newsCategory");
+            mWriters = getIntent().getStringExtra("newsAuthor");
+            fillNews();
+
+        }
+
+
+        fabShare.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            fabShare.setRippleColor(Color.parseColor("#ff5722"));
+                                            Intent intent = new Intent(Intent.ACTION_SEND);
+                                            intent.setType("text/plain");
+
+                                            intent.putExtra(Intent.EXTRA_SUBJECT, "http://www.myagdikali.com/" + mIds + ".html");
+                                            intent.putExtra(Intent.EXTRA_TEXT, "http://www.myagdikali.com/" + mIds + ".html");
+                                            startActivity(Intent.createChooser(intent, "How do you want to share ?"));
+                                        }
+                                    }
+
+        );
+    }
+
+    private void fillNews() {
+        linearLayout.setVisibility(View.VISIBLE);
         String html = mContents;
         Document doc = Jsoup.parse(html);
         Elements images = doc.getElementsByTag("img");
@@ -82,29 +160,18 @@ public class NewsDetails extends AppCompatActivity {
             image.attr("style", "pointer-events:none; display:inline; height:auto; max-width:100%;");
             image.appendElement("br");
 
-
-            // image.attr("onerror","this.src='file:///android_res/drawable/" + "header'" );
-
         }
-
 
         txtTitle.setText(mTitles);
         txtDate.setText(Singleton.convertDate(mDates));
         txtCategory.setText(mCategories);
         txtAuthor.setText(mWriters);
 
-
-        webContent.loadDataWithBaseURL("", "<body style=\"text-align:justify\">" + doc.toString() + "</body>", mimeType, encoding, "");
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("बेनीअनलाइन ");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        assert webContent != null;
+        webContent.loadDataWithBaseURL("", "<body style=\"text-align:justify\">" + doc.toString() + "</body>", "text/html", "UTF-8", "");
 
         fontSize = (int) getResources().getDimension(R.dimen.textSize);
 
-        settings = webContent.getSettings();
 
         settings.setDefaultFontSize(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("fontsize", fontSize));
         settings.setJavaScriptEnabled(true);
@@ -123,32 +190,17 @@ public class NewsDetails extends AppCompatActivity {
         settings.supportZoom();
 
         saved = isNewsSaved();
-
-        fabShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fabShare.setRippleColor(Color.parseColor("#ff5722"));
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-
-                intent.putExtra(Intent.EXTRA_SUBJECT, "http://www.myagdikali.com/" + mIds + ".html");
-                intent.putExtra(Intent.EXTRA_TEXT, "http://www.myagdikali.com/" + mIds + ".html");
-                startActivity(Intent.createChooser(intent, "How do you want to share ?"));
-            }
-        });
     }
 
+
     private void changeIcon() {
-        if (saved)
-            menu.findItem(R.id.action_fav).setIcon(R.drawable.fav_black);
-        else
-            menu.findItem(R.id.action_fav).setIcon(R.drawable.fav);
+        if (saved) menu.findItem(R.id.action_fav).setIcon(R.drawable.fav_black);
+        else menu.findItem(R.id.action_fav).setIcon(R.drawable.fav);
 
 
     }
 
     private boolean isNewsSaved() {
-
         SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM fav_news WHERE news_id=" + mIds + ";", null);
         return cursor.moveToNext();
@@ -181,10 +233,8 @@ public class NewsDetails extends AppCompatActivity {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     int dff = progress - prevProgress;
-                    if (dff < 0)
-                        fontSize -= 2;
-                    else
-                        fontSize += 2;
+                    if (dff < 0) fontSize -= 2;
+                    else fontSize += 2;
                     prevProgress = progress;
 
 
@@ -203,9 +253,7 @@ public class NewsDetails extends AppCompatActivity {
 
                 }
             });
-            new MaterialDialog.Builder(NewsDetails.this)
-                    .title("Change font size")
-                    .customView(seekBar, false).show();
+            new MaterialDialog.Builder(NewsDetails.this).title("Change font size").customView(seekBar, false).show();
 
         } else if (item.getItemId() == R.id.action_setting)
             startActivity(new Intent(NewsDetails.this, Settings.class));
@@ -229,7 +277,7 @@ public class NewsDetails extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        settings.setDefaultFontSize(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("fontsize", fontSize));
+        settings.setDefaultFontSize(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("fontsize", 9));
         seekBar.setProgress(getSharedPreferences("progressNow", MODE_PRIVATE).getInt("progress", 2));
 
     }

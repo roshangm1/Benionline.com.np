@@ -5,6 +5,5 @@
     <color name="colorPrimaryDark">#2980B9</color>
     <color name="colorAccent"> #ff5722</color>
 
-    <color name ="transColorPrimary">#803498DB</color>
     <color name ="transColorAccent">#80ff5722</color>
 </resources>

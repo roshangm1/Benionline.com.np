@@ -10,12 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import np.info.roshan.benionlinecomnp.R;
@@ -24,7 +22,7 @@ import np.info.roshan.benionlinecomnp.helper.Singleton;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHolder> {
 
-    private Context context;
+    private final Context context;
 
     private ArrayList<String> mTitles = new ArrayList<>(),
             mDates = new ArrayList<>(),
@@ -51,8 +49,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
     @Override
     public NewsAdapter.CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.each_post, parent, false);
-        CustomViewHolder viewHolder = new CustomViewHolder(view);
-        return viewHolder;
+        return new CustomViewHolder(view);
     }
 
     @Override
@@ -123,8 +120,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.CustomViewHold
                     .putExtra("newsCategory", mCategories.get(getAdapterPosition()))
                     .putExtra("newsAuthor", mWriters.get(getAdapterPosition()))
                     .putExtra("newsId", mIds.get(getAdapterPosition()));
-
-
             context.startActivity(intent);
 
         }
