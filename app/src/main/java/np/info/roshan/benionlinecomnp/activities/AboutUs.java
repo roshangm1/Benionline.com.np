@@ -44,7 +44,6 @@ public class AboutUs extends AppCompatActivity {
         FancyButton web = (FancyButton) findViewById(R.id.webButton);
 
         assert facebook != null;
-        assert facebook != null;
         facebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +61,6 @@ public class AboutUs extends AppCompatActivity {
         });
 
 
-        assert twitter != null;
         assert twitter != null;
         twitter.setOnClickListener(new View.OnClickListener() {
             @Override

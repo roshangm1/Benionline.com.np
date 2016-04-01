@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -39,8 +42,7 @@ import np.info.roshan.benionlinecomnp.helper.Singleton;
 public class NewsDetails extends AppCompatActivity {
 
     private int fontSize = 9;
-    private String from;
-    private String mTitles, mDates, mImages, mContents, mCategories, mWriters;
+    private String mTitles, mDates, mImages, mContents, mCategories, mWriters, from;
 
     private int mIds;
     private boolean saved;
@@ -61,9 +63,8 @@ public class NewsDetails extends AppCompatActivity {
 
         from = getIntent().getStringExtra("from");
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarNews);
-        linearLayout= (LinearLayout) findViewById(R.id.newsDetailLayout);
+        linearLayout = (LinearLayout) findViewById(R.id.newsDetailLayout);
 
         txtTitle = (TextView) findViewById(R.id.newsTitle);
         txtDate = (TextView) findViewById(R.id.newsDate);
@@ -83,12 +84,9 @@ public class NewsDetails extends AppCompatActivity {
 
         if (from != null && from.equals("notification")) {
             mIds = getIntent().getIntExtra("post_id", 0);
-            final MaterialDialog dialog = new MaterialDialog.Builder(this)
-                    .title("Please wait")
-                    .progress(true,0)
-                    .content("Extracting news")
-                    .build();
+            final MaterialDialog dialog = new MaterialDialog.Builder(this).title("Please wait").progress(true, 0).content("Extracting news").build();
             dialog.show();
+
             StringRequest request = new StringRequest("http://myagdikali.com/api/get_post/?post_id=" + mIds, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -106,9 +104,9 @@ public class NewsDetails extends AppCompatActivity {
                         JSONObject categoryObj = categories.getJSONObject(0);
                         mCategories = categoryObj.getString("title");
 
-
                         fillNews();
                         dialog.dismiss();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -120,8 +118,11 @@ public class NewsDetails extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+            request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             Singleton.getmInstance().addToRequestQueue(request);
-        } else {
+        } else
+
+        {
             mIds = getIntent().getExtras().getInt("newsId");
             mTitles = getIntent().getStringExtra("newsTitle");
             mDates = getIntent().getStringExtra("newsDate");
@@ -134,7 +135,9 @@ public class NewsDetails extends AppCompatActivity {
         }
 
 
-        fabShare.setOnClickListener(new View.OnClickListener() {
+        fabShare.setOnClickListener(new View.OnClickListener()
+
+                                    {
                                         @Override
                                         public void onClick(View v) {
                                             fabShare.setRippleColor(Color.parseColor("#ff5722"));
@@ -201,7 +204,7 @@ public class NewsDetails extends AppCompatActivity {
     }
 
     private boolean isNewsSaved() {
-        SQLiteDatabase database = new SQLiteHandler(this).getWritableDatabase();
+        SQLiteDatabase database = Singleton.getmInstance().getmDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM fav_news WHERE news_id=" + mIds + ";", null);
         return cursor.moveToNext();
 
@@ -266,9 +269,11 @@ public class NewsDetails extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_menu, menu);
-
         this.menu = menu;
+        if (from != null && from.equals("notification"))
+            menu.getItem(0).setVisible(false);
         changeIcon();
+
 
         return super.onCreateOptionsMenu(menu);
 
@@ -305,6 +310,11 @@ public class NewsDetails extends AppCompatActivity {
         database.execSQL("DELETE FROM fav_news WHERE news_id=" + mIds + ";");
         saved = false;
         database.close();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
     }
 
 

@@ -1,83 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
+        <group android:id="@+id/menu1">
 
-        <item
-            android:id="@+id/all_news"
-            android:checked="true"
-            android:icon="@drawable/all"
-            android:title="ताजा समाचार "/>
+            <item
+                android:id="@+id/all_news"
+                android:checked="true"
+                android:icon="@drawable/all"
+                android:title="ताजा समाचार"/>
 
-        <item
-            android:id="@+id/national_news"
-            android:icon="@drawable/national"
-            android:title="राष्ट्रिय समाचार"/>
+            <item
+                android:id="@+id/national_news"
+                android:icon="@drawable/national"
+                android:title="राष्ट्रिय समाचार"/>
+        </group>
+        <group android:id="@+id/menu2">
 
-        <item
-            android:id="@+id/myagdi_news"
-            android:title="म्याग्दी समाचार"
-            android:icon="@drawable/myagdi"
-            />
-        <item
-            android:id="@+id/parbat_news"
-            android:title="पर्वत समाचार"
-            android:icon="@drawable/parbat"
+            <item
+                android:id="@+id/myagdi_news"
+                android:icon="@drawable/myagdi"
+                android:title="म्याग्दी समाचार"
+                />
+            <item
+                android:id="@+id/parbat_news"
+                android:icon="@drawable/parbat"
+                android:title="पर्वत समाचार"
 
-            />
-        <item
-            android:id="@+id/baglung_news"
-            android:title="बाग्लुङ समाचार"
-            android:icon="@drawable/baglung"
-            />
-        <item
-            android:id="@+id/mustang_news"
-            android:title="मुस्ताङ समाचार"
-            android:icon="@drawable/mustang"/>
+                />
+            <item
+                android:id="@+id/baglung_news"
+                android:icon="@drawable/baglung"
+                android:title="बाग्लुङ समाचार"
+                />
+            <item
+                android:id="@+id/mustang_news"
+                android:icon="@drawable/mustang"
+                android:title="मुस्ताङ समाचार"/>
+        </group>
+        <group android:id="@+id/menu3">
 
-        <item
-            android:id="@+id/foreign_news"
-            android:icon="@drawable/earth"
-            android:title="प्रबास समाचार"/>
-        <item
-            android:id="@+id/sport_news"
-            android:icon="@drawable/sport"
-            android:title="खेलकुद समाचार"/>
+            <item
+                android:id="@+id/foreign_news"
+                android:icon="@drawable/earth"
+                android:title="प्रबास समाचार"/>
+            <item
+                android:id="@+id/sport_news"
+                android:icon="@drawable/sport"
+                android:title="खेलकुद समाचार"/>
 
-        <item
-            android:id="@+id/eco_news"
-            android:icon="@drawable/eco"
-            android:title="आर्थिक समाचार"/>
-        <item
-            android:id="@+id/misc_news"
-            android:icon="@drawable/misc"
-            android:title="बिबिध समाचार"/>
-    </group>
-
-    <group android:checkableBehavior="single">
-
-        <item
-            android:id="@+id/read_later"
-            android:icon="@drawable/fav_black"
-            android:title="फेब्रोईट समाचार  "/>
-
-        <item
-            android:id="@+id/settings"
-            android:checkable="false"
-            android:icon="@drawable/settings"
-
-            android:title="सेटिङ्ग "/>
+            <item
+                android:id="@+id/eco_news"
+                android:icon="@drawable/eco"
+                android:title="आर्थिक समाचार"/>
+            <item
+                android:id="@+id/misc_news"
+                android:icon="@drawable/misc"
+                android:title="बिबिध समाचार"/>
 
 
-        <item
-            android:id="@+id/rateus"
-            android:checkable="false"
-            android:icon="@drawable/rate"
-            android:title="रेट गर्नुहोस् "/>
+            <item
+                android:id="@+id/read_later"
+                android:icon="@drawable/fav_black"
+                android:title="फेब्रोईट समाचार  "/>
+        </group>
 
-        <item
-            android:id="@+id/aboutus"
-            android:checkable="false"
-            android:icon="@drawable/about"
-            android:title="हाम्रो बारे "/>
+        <group
+            android:id="@+id/menu4"
+            android:checkableBehavior="single">
+            <item
+                android:id="@+id/settings"
+                android:checkable="false"
+                android:icon="@drawable/settings"
+
+                android:title="सेटिङ्ग "/>
+
+
+            <item
+                android:id="@+id/rateus"
+                android:checkable="false"
+                android:icon="@drawable/rate"
+                android:title="रेट गर्नुहोस् "/>
+
+            <item
+                android:id="@+id/aboutus"
+                android:checkable="false"
+                android:icon="@drawable/about"
+                android:title="हाम्रो बारे "/>
+        </group>
     </group>
 </menu>

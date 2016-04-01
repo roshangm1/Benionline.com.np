@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -25,29 +26,29 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
+    private int thisId;
+    private String thisTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         AdView adView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice("CC5F2C72DF2B356BBF0DA198")
-                .build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice(AdRequest.DEVICE_ID_EMULATOR).addTestDevice("CC5F2C72DF2B356BBF0DA198").build();
 
 
         assert adView != null;
         adView.loadAd(adRequest);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        getSupportFragmentManager().beginTransaction().replace(R.id.contentHolder,News.newInstance(R.id.all_news)).commit();
-        setTitle("ताजा समाचार ");
+        getSupportFragmentManager().beginTransaction().replace(R.id.contentHolder, News.newInstance(R.id.all_news)).commit();
+        setTitle("ताजा समाचार");
 
         navigationView = (NavigationView) findViewById(R.id.navView);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout, toolbar,R.string.Open,R.string.Close) {
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.Open, R.string.Close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -67,13 +68,12 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.syncState();
 
 
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                int currentId = item.getItemId();
-                String menuTitle = (String) item.getTitle();
-                navigate(currentId,menuTitle);
+                thisId = item.getItemId();
+                thisTitle = (String) item.getTitle();
+                navigate(thisId, thisTitle);
                 mDrawerLayout.closeDrawers();
                 return true;
 
@@ -82,48 +82,40 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void navigate(int currentId,String menuTitle) {
-       if(currentId == R.id.aboutus) {
-           Intent intent = new Intent(MainActivity.this,AboutUs.class);
-           startActivity(intent);
-       } else if(currentId==R.id.settings) {
-           // Load settings activity
-           Intent intent = new Intent(MainActivity.this,Settings.class);
-           startActivity(intent);
-       } else if(currentId==R.id.rateus) {
-           new MaterialDialog.Builder(MainActivity.this)
-                   .title("रेट गर्नुहोस् ")
-                   .content("हामीलाई ५ तारा रेट गरेर एस विकासको लागि सहयोग गर्नुहोस।  ")
-                   .positiveText("हुन्छ ")
-                   .negativeText("पछि गर्छु ")
-                   .onPositive(new MaterialDialog.SingleButtonCallback() {
-                       @Override
-                       public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                           Uri uri = Uri.parse("market://details?id=" + getPackageName());
-                           Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+    private void navigate(int currentId, String menuTitle) {
+        if (currentId == R.id.aboutus) {
+            Intent intent = new Intent(MainActivity.this, AboutUs.class);
+            startActivity(intent);
+        } else if (currentId == R.id.settings) {
+            // Load settings activity
+            Intent intent = new Intent(MainActivity.this, Settings.class);
+            startActivity(intent);
+        } else if (currentId == R.id.rateus) {
+            new MaterialDialog.Builder(MainActivity.this).title("रेट गर्नुहोस् ").content("हामीलाई ५ तारा रेट गरेर एस विकासको लागि सहयोग गर्नुहोस।  ").positiveText("हुन्छ ").negativeText("पछि गर्छु ").onPositive(new MaterialDialog.SingleButtonCallback() {
+                @Override
+                public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                    Uri uri = Uri.parse("market://details?id=" + getPackageName());
+                    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
 
-                           goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                    goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
 
-                                   Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                           try {
-                               startActivity(goToMarket);
-                           } catch (ActivityNotFoundException e) {
-                               startActivity(new Intent(Intent.ACTION_VIEW,
-                                       Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    try {
+                        startActivity(goToMarket);
+                    } catch (ActivityNotFoundException e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
 
-                           }
-                       }
+                    }
+                }
 
 
-                   })
-                   .build()
-                   .show();
-       } else {
+            }).build().show();
+        } else {
 
-           getSupportActionBar().setTitle(menuTitle);
-           getSupportFragmentManager().beginTransaction().replace(R.id.contentHolder, News.newInstance(currentId)).commit();
+            setTitle(menuTitle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.contentHolder, News.newInstance(currentId)).commit();
 
-       }
+        }
     }
 
     @Override
@@ -136,9 +128,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             mDrawerLayout.openDrawer(navigationView);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!getSupportActionBar().getTitle().equals("ताजा समाचार")) {
+            setTitle("ताजा समाचार");
+            getSupportFragmentManager().beginTransaction().replace(R.id.contentHolder, News.newInstance(R.id.all_news)).commit();
+        } else super.onBackPressed();
     }
 }

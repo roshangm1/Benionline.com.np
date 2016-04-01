@@ -17,12 +17,22 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         CheckBox loadImages = (CheckBox) findViewById(R.id.load_images);
+        CheckBox notification = (CheckBox) findViewById(R.id.notifcation);
+
         loadImages.setChecked(getSharedPreferences("settings",MODE_PRIVATE).getBoolean("loadImages",true));
+        notification.setChecked(getSharedPreferences("settings",MODE_PRIVATE).getBoolean("notifications",true));
 
         loadImages.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("loadImages",isChecked).apply();
+            }
+        });
+
+        notification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("notifications",isChecked).apply();
             }
         });
 
