@@ -36,6 +36,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import np.info.roshan.benionlinecomnp.R;
+import np.info.roshan.benionlinecomnp.fragments.News;
 import np.info.roshan.benionlinecomnp.helper.SQLiteHandler;
 import np.info.roshan.benionlinecomnp.helper.Singleton;
 
@@ -115,7 +116,7 @@ public class NewsDetails extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     dialog.dismiss();
-                    onBackPressed();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.contentHolder, News.newInstance(R.id.all_news)).commit();
                 }
             });
             request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
@@ -207,7 +208,6 @@ public class NewsDetails extends AppCompatActivity {
         SQLiteDatabase database = Singleton.getmInstance().getmDatabase();
         Cursor cursor = database.rawQuery("SELECT * FROM fav_news WHERE news_id=" + mIds + ";", null);
         return cursor.moveToNext();
-
     }
 
 

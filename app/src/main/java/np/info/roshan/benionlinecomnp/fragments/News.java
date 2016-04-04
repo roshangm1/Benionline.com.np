@@ -67,6 +67,8 @@ public class News extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_news, container, false);
         itemId = getArguments().getInt("itemId");
+
+
         return rootView;
 
 
@@ -127,8 +129,8 @@ public class News extends Fragment {
         if (tableName.equals("fav_news")) loadFavouritePosts();
         else {
             loadFromDatabase();
+            fetchFromInternet(false);
         }
-
 
     }
 
@@ -186,7 +188,6 @@ public class News extends Fragment {
                     Snackbar.make(mainView.findViewById(R.id.newsLayout), "समाचार अपडेट गरियो। ", Snackbar.LENGTH_SHORT).show();
                     loadFromDatabase();
                 } else if (!isFirst) {
-                        Snackbar.make(mainView, "इन्टरनेट छैन।  फेरी प्रयास गर्नु होस्। । । ", Snackbar.LENGTH_SHORT).show();
 
                 } else errorMsg.setVisibility(View.VISIBLE);
             }
