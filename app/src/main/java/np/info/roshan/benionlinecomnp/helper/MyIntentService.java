@@ -28,13 +28,21 @@ public class MyIntentService extends GcmListenerService {
 
             NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(this);
             NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-            bigText.setBigContentTitle(data.getString("title"));
+            bigText.setBigContentTitle(data.getString("message"));
 
             Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification);
 
             notificationCompat.setStyle(bigText);
 
-            notificationCompat.setAutoCancel(true).setTicker(data.getString("title")).setWhen(System.currentTimeMillis()).setContentTitle(data.getString("title")).setSmallIcon(R.mipmap.ic_launcher).setVibrate(new long[]{100, 100}).setLights(Color.BLUE, 3000, 3000).setSound(sound).setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)).setContentText(data.getString("message"));
+            notificationCompat.setAutoCancel(true)
+                    .setTicker("Benionline.com.np")
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("Benionline.com.np")
+                    .setSmallIcon(R.mipmap.ic_launcher).setVibrate(new long[]{100, 100})
+                    .setLights(Color.BLUE, 3000, 3000)
+                    .setSound(sound)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                    .setContentText(data.getString("message"));
 
 
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(getApplicationContext(), NewsDetails.class).putExtra("from", "notification").putExtra("post_id", Integer.parseInt(data.getString("id"))), PendingIntent.FLAG_UPDATE_CURRENT);

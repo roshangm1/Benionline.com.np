@@ -1,6 +1,9 @@
 package np.info.roshan.benionlinecomnp.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -19,8 +22,11 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.util.Calendar;
+
 import np.info.roshan.benionlinecomnp.R;
 import np.info.roshan.benionlinecomnp.fragments.News;
+import np.info.roshan.benionlinecomnp.helper.TimeAlarm;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -80,7 +86,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+        PendingIntent pendingIntent;
+        Intent alarmIntent = new Intent(MainActivity.this, TimeAlarm.class);
+        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarmIntent, 0);
+
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Calendar calendarFir = Calendar.getInstance();
+
+        calendarFir.setTimeInMillis(System.currentTimeMillis());
+        calendarFir.set(Calendar.HOUR_OF_DAY, 11);
+        calendarFir.set(Calendar.MINUTE, 28);
+        calendarFir.set(Calendar.AM_PM,Calendar.AM);
+
+        long intendedTime = calendarFir.getTimeInMillis();
+
+        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, intendedTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+
     }
+
 
     private void navigate(int currentId, String menuTitle) {
         if (currentId == R.id.aboutus) {
